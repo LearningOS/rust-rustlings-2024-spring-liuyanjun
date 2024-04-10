@@ -8,17 +8,17 @@
 //
 // Execute `rustlings hint errors1` or use the `hint` watch subcommand for a
 // hint.
-use std::error::Error;
+use std::error;
 
-// I AM NOT DONE
 
-pub fn generate_nametag_text(name: String) -> Result<String, Error> {
+
+pub fn generate_nametag_text(name: String) -> Result<String, String> {
     if name.is_empty() {
         // Empty names aren't allowed.
-        Error("`name` was empty; it must be nonempty.".into())
+        Err("`name` was empty; it must be nonempty.".into())
         //None
     } else {
-        Some(format!("Hi! My name is {}", name))
+        Ok(format!("Hi! My name is {}", name))
     }
 }
 
