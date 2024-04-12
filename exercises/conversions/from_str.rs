@@ -31,7 +31,7 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
+
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -51,7 +51,63 @@ enum ParsePersonError {
 
 impl FromStr for Person {
     type Err = ParsePersonError;
-    fn from_str(s: &str) -> Result<Person, Self::Err> {
+    fn from_str(s: &str) -> Result<Person, Self::Err> {//Box<dyn std::error::Error>
+        if s.is_empty() {
+            return Err(ParsePersonError::Empty);
+        }
+
+        let splitted_item = s.split(',').collect::<Vec<&str>>();
+        let (name, age) = match &splitted_item[..] {
+            [name, age] => (
+                name.to_string(),
+                age.parse().map_err(ParsePersonError::ParseInt)?,
+            ),
+            _ => return Err(ParsePersonError::BadLen),
+        };
+
+        if name.is_empty() {
+            return Err(ParsePersonError::NoName);
+        }
+
+        Ok(Person {
+            name: name.into(),
+            age,
+        })
+        // if s.len()==0{
+        //     Err(Self::Err::Empty)
+        // }else{
+        //     let v:Vec<&str> = s.split(",").collect();
+        //     if v.len()!=2{
+        //         Err(Self::Err::BadLen)
+        //     }else{
+        //         let mut it = v.iter();
+        //         let t_name = it.next();
+        //         let t_age = it.next();
+        //         if t_name.is_none() || t_name.unwrap().len()==0 || t_age.is_none() || t_age.unwrap().len()==0{
+        //             Err(Self::Err::NoName)
+        //         }else{
+        //             // if t_age.is_none() || t_age.unwrap().len()==0{
+        //             //     Err(ParsePersonError::ParseInt)
+        //             // }else{
+        //             //     let name = t_name.unwrap().to_owned().to_string();
+        //             //     let age = t_age.unwrap().parse::<usize>();
+        //             //     if age.is_ok(){
+        //             //         Ok(Person{name: name, age: age.unwrap()})
+        //             //     }else{
+        //             //         Err(ParsePersonError::ParseInt)
+        //             //         //Err(Self::Err::Empty)
+        //             //     }
+        //             // }
+        //             let name = t_name.unwrap().to_owned().to_string();
+        //             let age = t_age.unwrap().parse::<usize>().map_err(ParsePersonError::ParseInt)?;
+        //             if age.is_ok(){
+        //                     Ok(Person{name: name, age: age.unwrap()})
+        //                 }
+                    
+
+        //         }
+        //     }
+        // }
     }
 }
 
