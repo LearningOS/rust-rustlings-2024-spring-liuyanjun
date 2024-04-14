@@ -2,13 +2,13 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct Node<T> {
     val: T,
     next: Option<NonNull<Node<T>>>,
@@ -22,7 +22,7 @@ impl<T> Node<T> {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct LinkedList<T> {
     length: u32,
     start: Option<NonNull<Node<T>>>,
@@ -34,7 +34,6 @@ impl<T> Default for LinkedList<T> {
         Self::new()
     }
 }
-
 impl<T> LinkedList<T> {
     pub fn new() -> Self {
         Self {
@@ -43,6 +42,10 @@ impl<T> LinkedList<T> {
             end: None,
         }
     }
+}
+
+impl<T: PartialOrd + PartialEq + Clone> LinkedList<T> {
+   
 
     pub fn add(&mut self, obj: T) {
         let mut node = Box::new(Node::new(obj));
@@ -72,11 +75,45 @@ impl<T> LinkedList<T> {
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+		// Self {
+        //     length: 0,
+        //     start: None,
+        //     end: None,
+        // }
+
+        let mut merged_list = LinkedList::<T>::new();
+        let mut current_a = list_a.start;
+        let mut current_b = list_b.start;
+
+        while current_a.is_some() || current_b.is_some() {
+
+            let next_val_a = current_a.map(|ptr| unsafe{ &(*ptr.as_ptr()).val});
+            let next_val_b = current_b.map(|ptr| unsafe{ &(*ptr.as_ptr()).val});
+
+            match (next_val_a, next_val_b) {
+                (Some(val_a), Some(val_b)) => {
+                    if val_a <= val_b {
+                        merged_list.add(val_a.clone());
+                        current_a = unsafe{ (*current_a.unwrap().as_ptr()).next };
+                    }else{
+                        merged_list.add(val_b.clone());
+                    current_b = unsafe{ (*current_b.unwrap().as_ptr()).next };
+                    }
+
+                },
+                (Some(val_a), None) => {
+                    merged_list.add(val_a.clone());
+                    current_a = unsafe{ (*current_a.unwrap().as_ptr()).next };
+                },
+                (None, Some(val_b)) => {
+                    merged_list.add(val_b.clone());
+                    current_b = unsafe{ (*current_b.unwrap().as_ptr()).next };
+                },
+                (None, None) => break,
+            }
         }
+
+        merged_list
 	}
 }
 
