@@ -2,7 +2,7 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -38,6 +38,10 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.count += 1;
+        self.items.push(value);
+        let idx = self.count;
+        self.heapify_to_up(idx);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -58,7 +62,38 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+		let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+        if right > self.count {
+            left
+        }else if (self.comparator)(&self.items[left], &self.items[right]){
+            left
+        } else {
+            right
+        }
+    }
+    fn heapify_to_up(&mut self, mut idx: usize){
+        while idx > 1{
+            let up_idx = self.parent_idx(idx);
+            if (self.comparator)(&self.items[idx], &self.items[up_idx]){
+                self.items.swap(idx, up_idx);
+                idx = up_idx;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn heapify_to_down(&mut self, mut idx: usize){
+        while self.children_present(idx) {
+            let smallest_child_idx = self.smallest_child_idx(idx);
+            if (self.comparator)(&self.items[smallest_child_idx], &self.items[idx]){
+                self.items.swap(smallest_child_idx, idx);
+                idx = smallest_child_idx;
+            }else {
+                break;
+            }
+        }
     }
 }
 
@@ -85,7 +120,13 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		if self.count ==0{
+            return None;
+        }
+        let result = self.items.swap_remove(1);
+        self.count -= 1;
+        self.heapify_to_down(1);
+        Some(result)
     }
 }
 
